@@ -1,0 +1,57 @@
+
+<html>
+  <head>
+    <style>
+      
+    svg {
+      width: 100px;
+      height: 100px;
+    }
+    svg > foreignObject {
+      width: 100px;
+      height: 100px;
+    }
+    svg > foreignObject > div {
+      width: 100px;
+      height: 100px;
+      background-image: url('./test_max_.png');
+      background-repeat: no-repeat;
+      background-position: 0 0;
+      background-size: 100px 1000px;
+    }
+    svg > foreignObject > div.type_anim {
+      animation:anim_test_max_ 10s steps(1) 0s infinite;
+    }
+    @keyframes anim_test_max_{
+      
+                  0% {background-position:0 0px;}
+      
+                  10% {background-position:0 -100px;}
+      
+                  20% {background-position:0 -200px;}
+      
+                  30% {background-position:0 -300px;}
+      
+                  40% {background-position:0 -400px;}
+      
+                  50% {background-position:0 -500px;}
+      
+                  60% {background-position:0 -600px;}
+      
+                  70% {background-position:0 -700px;}
+      
+                  80% {background-position:0 -800px;}
+      
+                  90% {background-position:0 -900px;}
+      
+                  100% {background-position:0 -900px;}
+    
+    }
+  
+    </style>
+  </head>
+  <body>
+    <svg viewBox="0, 0, 100, 100"><foreignObject width="100" height="100"><div class="type_anim"> </div></foreignObject></svg>
+  </body>
+</html>
+  
