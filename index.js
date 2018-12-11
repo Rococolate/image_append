@@ -229,12 +229,14 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
   let imageName = temp[temp.length - 1];
 
   if (!step) {
-    step = new Array(length).join(',').split(',').map(function(i,index){return index+1});
+    step = new Array(length).join(',').split(',').map(function(i,index){return index});
   } 
+  console.log(step)
 
   time = step.length * rate +'s';
   
-
+  console.log(bgsHeight,height)
+    console.log(bgsHeight - height)
   // if (step) {
     keyframes = step.reduce((pre,cur,index,array)=>{
       return pre + `
@@ -243,6 +245,7 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
     },'') + `
                   100% {background-position:0 -${(bgsHeight - height)}px;}
     `
+    
   // } else {
   //   keyframes = `
   //     from {background-position:0 0;}
