@@ -227,6 +227,7 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
   let steps = 1;
   let temp = fullName.split('/');
   let imageName = temp[temp.length - 1];
+  let cssName = name.replace('@','_0_')
 
   if (!step) {
     step = new Array(length).join(',').split(',').map(function(i,index){return index});
@@ -270,9 +271,9 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
       background-size: ${bgsWidth}px ${bgsHeight}px;
     }
     svg > foreignObject > div.type_anim {
-      animation:anim_${name} ${time} steps(${steps}) 0s infinite;
+      animation:anim_${cssName} ${time} steps(${steps}) 0s infinite;
     }
-    @keyframes anim_${name}{
+    @keyframes anim_${cssName}{
       ${keyframes}
     }
   `;
@@ -291,9 +292,9 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
             background-position: 0 0;
             background-size: ${bgsWidth}px ${bgsHeight}px;
             &.type_anim{
-              animation:anim_${name} ${time} steps(${steps}) 0s infinite;
+              animation:anim_${cssName} ${time} steps(${steps}) 0s infinite;
               @at-root{
-                @keyframes anim_${name}{
+                @keyframes anim_${cssName}{
                   ${keyframes}
                 }
               }
