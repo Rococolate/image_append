@@ -67,26 +67,49 @@ function doComposePic(dirPath,imgFiles,data){
   
   let width = images(first).width();
   let height = images(first).height();
-  let bgsWidth = width;
-  let bgsHeight = height*imgFiles.length;
+  // let bgsWidth = width;
+  // let bgsHeight = height*length;
 
-  console.log(width)
-  console.log(height)
-  console.log(bgsWidth)
-  console.log(bgsHeight)
+  
+  const maxHeight = 4096;
+  const allHeight = width*length;
+  const row = ~~(allHeight / maxHeight) + 1;
+  const col = Math.ceil(length / row);
 
-  const longImg = imgFiles.reduce((pre,cur)=>{
+  const longImgWidth = row * width;
+  const longImgHeight = col * height;
+  const position = imgFiles.map((img,index) => {
+    const x = index % row * width;
+    const y = ~~(index / row) * height;
+    return [x,y];
+  });
+
+
+  const longImg = imgFiles.reduce((pre,cur,index)=>{
     const curImg = images(cur);
-    const height = curImg.height();
-    return {
-      image:pre.image.draw(curImg,0,pre.height),
-      height:pre.height + height
-    }
-  },{image:images(bgsWidth,bgsHeight),height:0}).image;
+    const [x,y]= position[index];
+    return pre.draw(curImg,x,y);
+  },images(longImgWidth,longImgHeight));
+
+
+  console.log(width);
+  console.log(height);
+  console.log(position);
+  console.log(longImgWidth);
+  console.log(longImgHeight);
+
+  // const longImg = imgFiles.reduce((pre,cur)=>{
+  //   const curImg = images(cur);
+  //   const height = curImg.height();
+  //   return {
+  //     image:pre.image.draw(curImg,0,pre.height),
+  //     height:pre.height + height
+  //   }
+  // },{image:images(bgsWidth,bgsHeight),height:0}).image;
 
   longImg.save(fullName);
 
-  makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate);
+  makeTemp(name,fullName,width,height,longImgWidth,longImgHeight,length,step,rate,position);
   if (AEdataAnalyseTemp) writeAEdataAnalyseTemp(fullName,AEdataAnalyseTemp);
   imagemin([fullName],dirPath, {
     plugins: [
@@ -94,43 +117,6 @@ function doComposePic(dirPath,imgFiles,data){
     ]
   }).then((files)=>console.log(files))
   
-
-  // let width ;
-  // let height ;
-  // let bgsWidth ;
-  // let bgsHeight ;
-
-  
-
-  // const sizeFun1 = (err,size) => {
-  //   if (!err) {
-  //     width = size.width;
-  //     height = size.height;
-  //     console.log(size);
-  //   }
-  // }
-  // gm(first).size(sizeFun1).append(...imgFiles).write(fullName,(err)=>{
-  //   console.log(err);
-  //   gm(fullName).size(async (err,size)=>{
-  //     if (!err) {
-  //       bgsWidth = size.width;
-  //       bgsHeight = size.height;
-  //       console.log(size);
-  //     }
-  //     console.log(width)
-  //     console.log(height)
-  //     console.log(bgsWidth)
-  //     console.log(bgsHeight)
-  //     makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate);
-  //     if (AEdataAnalyseTemp) writeAEdataAnalyseTemp(fullName,AEdataAnalyseTemp);
-  //     const files = await imagemin([fullName],dirPath, {
-  //       plugins: [
-  //         imageminPngquant({quality: '65-80'})
-  //       ]
-  //     });
-  //     console.log(files);
-  //   });
-  // });
 
 
 }
@@ -220,7 +206,7 @@ function writeAEdataAnalyseTemp(fullName,AEdataAnalyseTemp){
 }
 
 
-function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate=0.1) {
+function makeTemp(name,fullName,width,height,longImgWidth,longImgHeight,length,step,rate=0.1,position) {
 
   let keyframes;
   let time;
@@ -236,21 +222,21 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
 
   time = step.length * rate +'s';
   
-  console.log(bgsHeight,height)
-    console.log(bgsHeight - height)
+  console.log(longImgHeight,height)
+    console.log(longImgHeight - height)
   // if (step) {
     keyframes = step.reduce((pre,cur,index,array)=>{
       return pre + `
-                  ${index/array.length*100}% {background-position:0 ${(cur)*height*-1}px;}
+                  ${index/array.length*100}% {background-position:${(position[cur][0])*-1}px ${(position[cur][1])*-1}px;}
       `
     },'') + `
-                  100% {background-position:0 -${(bgsHeight - height)}px;}
+                  100% {background-position:${(position[step[step.length - 1]][0])*-1}px ${(position[step[step.length - 1]][1])*-1}px;}
     `
     
   // } else {
   //   keyframes = `
   //     from {background-position:0 0;}
-  //     to {background-position:0 -${(bgsHeight - height)}px;}
+  //     to {background-position:0 -${(longImgHeight - height)}px;}
   //   `
   // }
   const tempCss = `
@@ -268,7 +254,7 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
       background-image: url('./${imageName}');
       background-repeat: no-repeat;
       background-position: 0 0;
-      background-size: ${bgsWidth}px ${bgsHeight}px;
+      background-size: ${longImgWidth}px ${longImgHeight}px;
     }
     svg > foreignObject > div.type_anim {
       animation:anim_${cssName} ${time} steps(${steps}) 0s infinite;
@@ -290,7 +276,7 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
             background-image: url(${imageName});
             background-repeat: no-repeat;
             background-position: 0 0;
-            background-size: ${bgsWidth}px ${bgsHeight}px;
+            background-size: ${longImgWidth}px ${longImgHeight}px;
             &.type_anim{
               animation:anim_${cssName} ${time} steps(${steps}) 0s infinite;
               @at-root{
@@ -327,6 +313,12 @@ function makeTemp(name,fullName,width,height,bgsWidth,bgsHeight,length,step,rate
       }
       console.log("The file was saved!");
   });
+  fs.writeFile(fullName + '.position.json', JSON.stringify(position), function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log("The file was saved!");
+});
 }
 
 
