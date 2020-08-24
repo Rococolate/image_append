@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "gm": "^1.23.1",
     "imagemin": "^6.0.0",
     "imagemin-pngquant": "^6.0.0",
     "images": "^3.0.1"

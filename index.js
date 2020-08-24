@@ -1,6 +1,5 @@
 const PATH = require('path');
 const fs = require('fs');
-const gm = require('gm');
 const images = require('images');
 const imagemin = require('imagemin');
 const AEdataToCSS = require('./AEdataToCss.js');
@@ -191,10 +190,6 @@ function matchNum(name){
   return 0;
 }
 
-
-function createIndexArrayByLength(length){
-  return Array(length).join(" ").split(" ").map((item,index)=>index);
-}
 
 function writeAEdataAnalyseTemp(fullName,AEdataAnalyseTemp){
   fs.writeFile(fullName + '_ae_.scss', AEdataAnalyseTemp, function(err) {
